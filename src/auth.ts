@@ -43,10 +43,29 @@ const endpoints = {
  */
 function createMsalConfig(secrets: AppSecrets): Configuration {
   const cloudEndpoints = getCloudEndpoints(secrets.cloudType);
+
+  // Behebt Silent Auth für persönliche MSA-Konten:
+  // MSAL speichert 'login.windows.net' als Environment, der Server verwendet
+  // 'login.microsoftonline.com' — diese Metadata erklärt MSAL dass beide Aliases sind.
+  const cloudDiscoveryMetadata = JSON.stringify({
+    tenant_discovery_endpoint: `${cloudEndpoints.authority}/common/v2.0/.well-known/openid-configuration`,
+    metadata: [{
+      preferred_network: 'login.microsoftonline.com',
+      preferred_cache: 'login.windows.net',
+      aliases: [
+        'login.microsoftonline.com',
+        'login.windows.net',
+        'sts.windows.net',
+        'login.microsoft.com',
+      ],
+    }],
+  });
+
   return {
     auth: {
       clientId: secrets.clientId || getDefaultClientId(secrets.cloudType),
       authority: `${cloudEndpoints.authority}/${secrets.tenantId || 'common'}`,
+      cloudDiscoveryMetadata,
     },
   };
 }
