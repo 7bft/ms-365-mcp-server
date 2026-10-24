@@ -1,8 +1,0 @@
-#!/bin/bash
-# Startet den ms-365-mcp-server fuer das persoenliche Konto (launchd-Job
-# com.ms365mcp.personal). Eigenes Skript, damit macOS in den
-# Anmeldeobjekten "ms365-personal" statt "Node.js Foundation" anzeigt.
-# Pfad zum Repo wird relativ zu diesem Skript bestimmt (ueberlebt Verschieben).
-NODE="/Users/mrmammut/.nvm/versions/node/v22.22.3/bin/node"
-DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$NODE" "$DIR/dist/index.js" --http --trust-proxy-auth --preset tasks
